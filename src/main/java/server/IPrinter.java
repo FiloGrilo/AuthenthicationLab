@@ -2,7 +2,7 @@ package src.main.java.server;
 
 import java.util.Map;
 
-interface IPrinter {
+public interface IPrinter {
     String print (String file, String printer);
     Map<Integer, String> queue (String printer);
     void topQueue(String printer, Integer job);

@@ -15,17 +15,18 @@ public class PrinterService extends UnicastRemoteObject implements IPrinterServi
     }
 
     @Override
-    public void createUser(String username, String password) {
+    public void createUser(String username, String password) throws RemoteException {
         passwordService.saveUser(username, password);
         System.out.println("New user with username: " + username + "is created");
     }
 
     @Override
-    public IPrinter verifyUser(String username, String password) throws AuthenticationFailedException {
+    public IPrinter verifyUser(String username, String password) throws AuthenticationFailedException, RemoteException {
         if(passwordService.verifyUser(username, password)) {
             System.out.println("User with username " + username + "is successfully verified and can use the printer");
             return printer;
         }
         throw new AuthenticationFailedException("Authentication of user with username: " + username + "is failed. User cannot use the printer");
     }
+
 }
