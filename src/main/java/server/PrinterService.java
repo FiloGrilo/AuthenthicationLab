@@ -1,11 +1,15 @@
 package src.main.java.server;
 
-public class PrinterService implements IPrinterService {
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class PrinterService extends UnicastRemoteObject implements IPrinterService  {
 
     private final IPasswordService passwordService;
     private final IPrinter printer;
 
-    public PrinterService(IPasswordService passwordService, IPrinter printer) {
+    public PrinterService(IPasswordService passwordService, IPrinter printer) throws RemoteException {
+        super();
         this.passwordService = passwordService;
         this.printer = printer;
     }
