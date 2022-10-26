@@ -1,3 +1,7 @@
+package src.main.java.client;
+
+import src.main.java.HelloService;
+
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
