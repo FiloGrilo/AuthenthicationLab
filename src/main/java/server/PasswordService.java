@@ -36,6 +36,8 @@ public class PasswordService implements IPasswordService {
             }
             if(hashedPassword != null && salt != null) {
                 return isExpectedPassword(password.toCharArray(), salt, hashedPassword.toCharArray());
+            } else {
+                System.out.println("User with username: " + username + " not found!");
             }
         }
         throw new Exception("Could not check the password");
