@@ -1,9 +1,14 @@
 package server;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
 
-public interface IPrinterService extends Remote {
-    void createUser(String username, String password) throws RemoteException;
-    boolean verifyUser(String username, String password) throws AuthenticationFailedException, RemoteException;
+public interface IPrinterService {
+    void print (String file, String printer);
+    void queue (String printer);
+    void topQueue(String printer, Integer job);
+    void start();
+    void stop();
+    void restart();
+    void status();
+    void readConfig(String parameter);
+    void setConfig(String parameter, String value);
 }

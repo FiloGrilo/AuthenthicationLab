@@ -1,9 +1,8 @@
 package client;
 
 import server.AuthenticationFailedException;
-import server.IPrinterService;
+import server.IPrinterFacade;
 
-import java.nio.charset.Charset;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
@@ -12,14 +11,13 @@ import java.util.Random;
 
 public class Client {
     public static void main(String[] args) throws NotBoundException, MalformedURLException, RemoteException, AuthenticationFailedException {
-        IPrinterService service = (IPrinterService) Naming.lookup("rmi://localhost:5099/printerService");
+        IPrinterFacade service = (IPrinterFacade) Naming.lookup("rmi://localhost:5099/printerService");
         String username = generateRandomUsername();
-        service.createUser(username, "test");
+        service.createUser("fdfdf", "test");
         service.verifyUser(username, "test");
     }
 
     private static String generateRandomUsername() {
        return "user_"  + new Random().nextInt();
-
     }
 }

@@ -1,42 +1,102 @@
 package server;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class PrinterService extends UnicastRemoteObject implements IPrinterService  {
 
-    private final IPasswordService passwordService;
-    private final IPrinter printer;
+//TODO needs to be implemented
+public class PrinterService implements IPrinterService {
+    private boolean isStarted;
+    private final Map<String, Printer> printers;
+    private Map<String, String> configs = new HashMap<>();
 
-    public PrinterService(IPasswordService passwordService, IPrinter printer) throws RemoteException {
-        super();
-        this.passwordService = passwordService;
-        this.printer = printer;
+    public PrinterService(Map<String, Printer> printers) {
+        this.printers = printers;
     }
 
     @Override
-    public void createUser(String username, String password) throws RemoteException {
-        try {
-            passwordService.saveUser(username, password);
-            System.out.println("New user with username: " + username + " is created");
-        } catch (SQLException e) {
-            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+    public void print(String file, String printer) {
+        Printer p = printers.get(printer);
+        if(!isStarted) {
+            System.out.println("Printer server is not started!");
+        } else if (p == null) {
+            System.out.println("Printer with name: " + printer + " not found!");
+        } else {
+            p.print(file);
         }
     }
 
     @Override
-    public boolean verifyUser(String username, String password) throws AuthenticationFailedException, RemoteException {
-        try {
-            if(passwordService.verifyUser(username, password)) {
-                System.out.println("User with username " + username + " is successfully verified and can use the printer");
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new AuthenticationFailedException("Authentication of user with username: " + username + " is failed. User cannot use the printer");
+    public void queue(String printer) {
+        Printer p = printers.get(printer);
+        if(!isStarted) {
+            System.out.println("Printer server is not started!");
+        } else if (p == null) {
+            System.out.println("Printer with name: " + printer + " not found!");
+        } else {
+            p.queue();
         }
-        throw new AuthenticationFailedException("Authentication of user with username: " + username + " is failed. User cannot use the printer");
+    }
+
+    @Override
+    public void topQueue(String printer, Integer job) {
+        Printer p = printers.get(printer);
+        if(!isStarted) {
+            System.out.println("Printer server is not started!");
+        } else if (p == null) {
+            System.out.println("Printer with name: " + printer + " not found!");
+        } else {
+            p.topQueue(job);
+        }
+    }
+
+    @Override
+    public void start() {
+        System.out.println("Printer server started");
+        isStarted = true;
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("Printer server stopped");
+        isStarted = false;
+    }
+
+    @Override
+    public void restart() {
+        System.out.println("Invocation of restart command - stoppping printing service, clearing prints queue" +
+                "and starting printing service again");
+        stop();
+        printers.values().forEach(Printer::clearQueue);
+        start();
+    }
+
+    @Override
+    public void status() {
+        if (isStarted) {
+            System.out.println("Printer server is started and can be used");
+        } else {
+            System.out.println("Printer server is not started and can not be used");
+        }
+    }
+
+    @Override
+    public void readConfig(String parameter) {
+        if(!isStarted) {
+            System.out.println("Printer server is not started!");
+        } else {
+            System.out.println("The value of the parameter " + parameter + " :" + configs.get(parameter));
+        }
+    }
+
+    @Override
+    public void setConfig(String parameter, String value) {
+        if(!isStarted) {
+            System.out.println("Printer server is not started!");
+        } else {
+            System.out.println("Invocation of setConfig command - set the " + parameter + " to the " + value);
+            configs.put(parameter, value);
+        }
     }
 
 }
