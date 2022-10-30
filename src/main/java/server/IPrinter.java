@@ -1,4 +1,4 @@
-package src.main.java.server;
+package server;
 
 import java.util.Map;
 
@@ -10,6 +10,6 @@ public interface IPrinter {
     void stop();
     void restart();
     String status();
-    String readConfig();
+    String readConfig(String parameter);
     String setConfig(String parameter, String value);
 }

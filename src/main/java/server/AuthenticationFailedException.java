@@ -1,4 +1,4 @@
-package src.main.java.server;
+package server;
 
 public class AuthenticationFailedException extends Exception {
     public AuthenticationFailedException(String message) {

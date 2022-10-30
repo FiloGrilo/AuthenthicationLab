@@ -1,23 +1,25 @@
-package src.main.java.client;
+package client;
 
-import src.main.java.server.AuthenticationFailedException;
-import src.main.java.server.IPrinter;
-import src.main.java.server.IPrinterService;
-import src.main.java.server.Printer;
+import server.AuthenticationFailedException;
+import server.IPrinterService;
 
+import java.nio.charset.Charset;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.Random;
 
 public class Client {
-    public static void main(String[] args) throws NotBoundException, MalformedURLException, RemoteException{
+    public static void main(String[] args) throws NotBoundException, MalformedURLException, RemoteException, AuthenticationFailedException {
         IPrinterService service = (IPrinterService) Naming.lookup("rmi://localhost:5099/printerService");
-        try {
-            IPrinter printer = service.verifyUser("test", "test1");
-            printer.print("fileee", "");
-        } catch (AuthenticationFailedException e) {
-            System.out.println(e.getMessage());
-        }
+        String username = generateRandomUsername();
+        service.createUser(username, "test");
+        service.verifyUser(username, "test");
+    }
+
+    private static String generateRandomUsername() {
+       return "user_"  + new Random().nextInt();
+
     }
 }

@@ -1,7 +1,8 @@
-package src.main.java.server;
+package server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 
 public class PrinterService extends UnicastRemoteObject implements IPrinterService  {
 
@@ -16,17 +17,26 @@ public class PrinterService extends UnicastRemoteObject implements IPrinterServi
 
     @Override
     public void createUser(String username, String password) throws RemoteException {
-        passwordService.saveUser(username, password);
-        System.out.println("New user with username: " + username + "is created");
+        try {
+            passwordService.saveUser(username, password);
+            System.out.println("New user with username: " + username + " is created");
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+        }
     }
 
     @Override
-    public IPrinter verifyUser(String username, String password) throws AuthenticationFailedException, RemoteException {
-        if(passwordService.verifyUser(username, password)) {
-            System.out.println("User with username " + username + "is successfully verified and can use the printer");
-            return printer;
+    public boolean verifyUser(String username, String password) throws AuthenticationFailedException, RemoteException {
+        try {
+            if(passwordService.verifyUser(username, password)) {
+                System.out.println("User with username " + username + " is successfully verified and can use the printer");
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AuthenticationFailedException("Authentication of user with username: " + username + " is failed. User cannot use the printer");
         }
-        throw new AuthenticationFailedException("Authentication of user with username: " + username + "is failed. User cannot use the printer");
+        throw new AuthenticationFailedException("Authentication of user with username: " + username + " is failed. User cannot use the printer");
     }
 
 }
