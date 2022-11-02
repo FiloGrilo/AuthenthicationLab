@@ -18,9 +18,9 @@ public class PrinterService implements IPrinterService {
     public void print(String file, String printer) {
         Printer p = printers.get(printer);
         if(!isStarted) {
-            System.out.println("Printer server is not started!");
+            System.out.println("PRINT - Printer server is not started yet!\n");
         } else if (p == null) {
-            System.out.println("Printer with name: " + printer + " not found!");
+            System.out.println("\nPRINT - Printer with name: '" + printer + "' not found!\n");
         } else {
             p.print(file);
         }
@@ -30,9 +30,9 @@ public class PrinterService implements IPrinterService {
     public void queue(String printer) {
         Printer p = printers.get(printer);
         if(!isStarted) {
-            System.out.println("Printer server is not started!");
+            System.out.println("QUEUE - Printer server is not started!\n");
         } else if (p == null) {
-            System.out.println("Printer with name: " + printer + " not found!");
+            System.out.println("QUEUE - Printer with name: " + printer + " not found!");
         } else {
             p.queue();
         }
@@ -42,9 +42,9 @@ public class PrinterService implements IPrinterService {
     public void topQueue(String printer, Integer job) {
         Printer p = printers.get(printer);
         if(!isStarted) {
-            System.out.println("Printer server is not started!");
+            System.out.println("TOP_QUEUE - Printer server is not started!\n");
         } else if (p == null) {
-            System.out.println("Printer with name: " + printer + " not found!");
+            System.out.println("TOP_QUEUE - Printer with name: " + printer + " not found!\n");
         } else {
             p.topQueue(job);
         }
@@ -52,49 +52,53 @@ public class PrinterService implements IPrinterService {
 
     @Override
     public void start() {
-        System.out.println("Printer server started");
+        System.out.println("\nSTART - Printer server started...\n");
         isStarted = true;
     }
 
     @Override
     public void stop() {
-        System.out.println("Printer server stopped");
+        System.out.println("STOP - Printer server stopped.\n");
         isStarted = false;
     }
 
     @Override
     public void restart() {
-        System.out.println("Invocation of restart command - stoppping printing service, clearing prints queue" +
-                "and starting printing service again");
+        System.out.println("--------------------RESTART----------------------");
+        System.out.println("Invocation of restart command..\n");
         stop();
-        printers.values().forEach(Printer::clearQueue);
+        printers.values().forEach(Printer::clear);
         start();
     }
 
     @Override
     public void status() {
+        System.out.println("--------------------STATUS----------------------");
+        System.out.println("Invocation of status command..\n");
         if (isStarted) {
-            System.out.println("Printer server is started and can be used");
+            System.out.println("Printer server is started and can be used\n");
         } else {
-            System.out.println("Printer server is not started and can not be used");
+            System.out.println("Printer server is not started and can not be used\n");
         }
     }
 
     @Override
     public void readConfig(String parameter) {
+        System.out.println("--------------------READ_CONFIG----------------------");
         if(!isStarted) {
             System.out.println("Printer server is not started!");
         } else {
-            System.out.println("The value of the parameter " + parameter + " :" + configs.get(parameter));
+            System.out.println("The value of the parameter '" + parameter + "' : " + configs.get(parameter) + "\n");
         }
     }
 
     @Override
     public void setConfig(String parameter, String value) {
+        System.out.println("--------------------SET_CONFIG----------------------");
         if(!isStarted) {
             System.out.println("Printer server is not started!");
         } else {
-            System.out.println("Invocation of setConfig command - set the " + parameter + " to the " + value);
+            System.out.println("Invocation of setConfig command - set parameter '" + parameter + "' to the value '" + value + "' \n");
             configs.put(parameter, value);
         }
     }

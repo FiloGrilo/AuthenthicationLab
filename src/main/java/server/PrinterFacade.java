@@ -10,7 +10,7 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
 
     private final IPasswordService passwordService;
     private final IPrinterService printerService;
-    private final Set<String> authenticatedUsers = new HashSet<>();
+    private Set<String> authenticatedUsers = new HashSet<>();
 
     public PrinterFacade(IPasswordService passwordService, IPrinterService printer) throws RemoteException {
         super();
@@ -31,7 +31,7 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     @Override
     public boolean verifyUser(String username, String password) throws AuthenticationFailedException, RemoteException {
         try {
-            if(passwordService.verifyUser(username, password)) {
+            if (passwordService.verifyUser(username, password)) {
                 authenticatedUsers.add(username);
                 System.out.println("User with username " + username + " is successfully verified and can use the printer");
                 return true;
@@ -45,14 +45,98 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
 
 
     @Override
-    public void print( String filename, String printer) {
-        printerService.print(filename, printer);
+    public void print(String username, String filename, String printer) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.print(filename, printer);
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
+    @Override
+    public void queue(String username, String printer) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.queue(printer);
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
+    @Override
+    public void topQueue(String username, String printer, Integer job) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.topQueue(printer, job);
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
+    @Override
+    public void start(String username) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.start();
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
+    @Override
+    public void stop(String username) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.stop();
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
+    @Override
+    public void restart(String username) {
+        try {
+            checkUserIsAuthenticated(username);
+            authenticatedUsers.clear();
+            printerService.restart();
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
+    @Override
+    public void status(String username) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.status();
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void readConfig(String username, String parameter) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.readConfig(parameter);
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void setConfig(String username, String parameter, String value) {
+        try {
+            checkUserIsAuthenticated(username);
+            printerService.setConfig(parameter, value);
+        } catch (AuthenticationFailedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void checkUserIsAuthenticated(String username) throws AuthenticationFailedException {
+       if (!authenticatedUsers.contains(username)) throw new AuthenticationFailedException("User is not authenticated yet!");
+    }
 
 }
