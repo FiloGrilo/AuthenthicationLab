@@ -16,9 +16,9 @@ PrinterFacade with all parameters it needs to work.
 
 ## How to check results
 
-Both server and client print the logs on the console
+Both server and client print logs on the console
 
 
                     
-
+    
 

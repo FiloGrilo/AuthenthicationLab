@@ -4,6 +4,9 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 
+/**
+ *  This class provides the printer server endpoints that client can use.
+ */
 public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade {
 
     private final IPasswordService passwordService;
