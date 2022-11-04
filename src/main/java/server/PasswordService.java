@@ -22,6 +22,12 @@ public class PasswordService implements IPasswordService {
     private static final int KEY_LENGTH = 256;
 
 
+    /**
+     *  This method verifies if user in the database and has a correct password
+     *
+     * @param password the password to be verified
+     * @param username username
+     */
     @Override
     public boolean verifyUser(String username, char[] password) throws Exception {
         try (Connection con = DataSource.getConnection();
@@ -67,7 +73,7 @@ public class PasswordService implements IPasswordService {
      * Returns a salted and hashed password using the provided hash.<br>
      *
      * @param password the password to be hashed
-     * @param salt     a 16 bytes salt, ideally obtained with the getNextSalt method
+     * @param salt     a 16 bytes salt
      *
      * @return the hashed password with a salt
      */
