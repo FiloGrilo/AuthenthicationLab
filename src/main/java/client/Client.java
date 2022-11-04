@@ -17,13 +17,15 @@ public class Client {
         service.createUser(username, "test".toCharArray());
         // try to verify user with incorrect password
         try {
+            System.out.println("\nTrying to verify user with incorrect password..");
             service.verifyUser(username, "incorrect".toCharArray());
         } catch (AuthenticationFailedException e) {
             System.out.println(e.getMessage());
         }
         // try to verify user with correct password
+        System.out.println("\nTrying to verify user with correct password..");
         boolean isUserVerified = service.verifyUser(username, "test".toCharArray());
-        if (isUserVerified) System.out.println("User with username '" + username + "'successfully verified!");
+        if (isUserVerified) System.out.println("User with username '" + username + "'successfully verified!\n");
 
         // start the printing server
         System.out.println("\nStarting the server...\n");
