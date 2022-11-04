@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
 
-//TODO needs to be implemented
 public class PasswordService implements IPasswordService {
 
     private static final String SQL_QUERY_INSERT = "insert into users(username, password, salt) values (?, ?, ?)";
@@ -22,8 +21,9 @@ public class PasswordService implements IPasswordService {
     private static final Random RANDOM = new SecureRandom();
     private static final int KEY_LENGTH = 256;
 
+
     @Override
-    public boolean verifyUser(String username, String password) throws Exception {
+    public boolean verifyUser(String username, char[] password) throws Exception {
         try (Connection con = DataSource.getConnection();
              PreparedStatement pst = con.prepareStatement( SQL_QUERY_SELECT )) {
             pst.setString(1, username);
@@ -35,7 +35,7 @@ public class PasswordService implements IPasswordService {
                 salt = rst.getString(3);
             }
             if(hashedPassword != null && salt != null) {
-                return isExpectedPassword(password.toCharArray(), salt, hashedPassword.toCharArray());
+                return isExpectedPassword(password, salt, hashedPassword.toCharArray());
             } else {
                 System.out.println("User with username: " + username + " not found!");
             }
@@ -50,7 +50,7 @@ public class PasswordService implements IPasswordService {
      * @param username username to be saved
      */
     @Override
-    public void saveUser(final String username, String password) throws SQLException {
+    public void saveUser(final String username, char[] password) throws SQLException {
         try (Connection con = DataSource.getConnection();
              PreparedStatement pst = con.prepareStatement( SQL_QUERY_INSERT )) {
              pst.setString(1, username);
@@ -58,9 +58,8 @@ public class PasswordService implements IPasswordService {
              RANDOM.nextBytes(saltBytes);
              String salt = Base64.getEncoder().encodeToString(saltBytes);
              pst.setString(3, salt);
-             pst.setString(2, hash(password.toCharArray(), salt));
+             pst.setString(2, hash(password, salt));
              int row = pst.executeUpdate();
-             System.out.println("rows affected: " + row);
         }
     }
 

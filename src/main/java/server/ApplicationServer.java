@@ -13,7 +13,8 @@ public class ApplicationServer {
         PasswordService passwordService = new PasswordService();
         Map<String, Printer> printers = generatePrinters();
         PrinterService printerService = new PrinterService(printers);
-        registry.rebind("printerService", new PrinterFacade(passwordService, printerService));
+        UserService userService = new UserService();
+        registry.rebind("printerService", new PrinterFacade(passwordService, printerService, userService));
     }
 
     private static Map<String, Printer> generatePrinters() {

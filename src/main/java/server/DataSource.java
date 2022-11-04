@@ -29,8 +29,6 @@ public class DataSource {
     public static Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
-    public static HikariDataSource getDataSource() throws SQLException {
-        return ds;
-    }
+
 
 }

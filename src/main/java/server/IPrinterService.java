@@ -2,13 +2,13 @@ package server;
 
 
 public interface IPrinterService {
-    void print (String file, String printer);
-    void queue (String printer);
+    String print (String file, String printer);
+    String queue (String printer);
     void topQueue(String printer, Integer job);
     void start();
     void stop();
     void restart();
-    void status();
-    void readConfig(String parameter);
+    String status();
+    String readConfig(String parameter);
     void setConfig(String parameter, String value);
 }

@@ -3,8 +3,6 @@ package server;
 import java.util.HashMap;
 import java.util.Map;
 
-
-//TODO needs to be implemented
 public class PrinterService implements IPrinterService {
     private boolean isStarted;
     private final Map<String, Printer> printers;
@@ -15,27 +13,25 @@ public class PrinterService implements IPrinterService {
     }
 
     @Override
-    public void print(String file, String printer) {
+    public String print(String file, String printer) {
         Printer p = printers.get(printer);
         if(!isStarted) {
-            System.out.println("PRINT - Printer server is not started yet!\n");
+            return "PRINT - Printer server is not started yet!\n";
         } else if (p == null) {
-            System.out.println("\nPRINT - Printer with name: '" + printer + "' not found!\n");
-        } else {
-            p.print(file);
+            return "\nPRINT - Printer with name: '" + printer + "' not found!\n";
         }
+        return p.print(file);
     }
 
     @Override
-    public void queue(String printer) {
+    public String queue(String printer) {
         Printer p = printers.get(printer);
         if(!isStarted) {
-            System.out.println("QUEUE - Printer server is not started!\n");
+           return "QUEUE - Printer server is not started!\n";
         } else if (p == null) {
-            System.out.println("QUEUE - Printer with name: " + printer + " not found!");
-        } else {
-            p.queue();
+           return "QUEUE - Printer with name: " + printer + " not found!";
         }
+        return p.queue();
     }
 
     @Override
@@ -64,7 +60,6 @@ public class PrinterService implements IPrinterService {
 
     @Override
     public void restart() {
-        System.out.println("--------------------RESTART----------------------");
         System.out.println("Invocation of restart command..\n");
         stop();
         printers.values().forEach(Printer::clear);
@@ -72,29 +67,25 @@ public class PrinterService implements IPrinterService {
     }
 
     @Override
-    public void status() {
-        System.out.println("--------------------STATUS----------------------");
+    public String status() {
         System.out.println("Invocation of status command..\n");
         if (isStarted) {
-            System.out.println("Printer server is started and can be used\n");
-        } else {
-            System.out.println("Printer server is not started and can not be used\n");
+           return "Printer server is started and can be used\n";
         }
+        return "Printer server is not started and can not be used\n";
     }
 
     @Override
-    public void readConfig(String parameter) {
-        System.out.println("--------------------READ_CONFIG----------------------");
+    public String readConfig(String parameter) {
         if(!isStarted) {
-            System.out.println("Printer server is not started!");
-        } else {
-            System.out.println("The value of the parameter '" + parameter + "' : " + configs.get(parameter) + "\n");
+            return "Printer server is not started!";
         }
+        System.out.println("Invocation of readConfig command - read config for parameter '" + parameter + "'\n");
+        return "The value of the parameter '" + parameter + "' : " + configs.get(parameter) + "\n";
     }
 
     @Override
     public void setConfig(String parameter, String value) {
-        System.out.println("--------------------SET_CONFIG----------------------");
         if(!isStarted) {
             System.out.println("Printer server is not started!");
         } else {
