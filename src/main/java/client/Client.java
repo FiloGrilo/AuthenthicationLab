@@ -12,6 +12,25 @@ import java.util.Random;
 public class Client {
     public static void main(String[] args) throws NotBoundException, MalformedURLException, RemoteException, AuthenticationFailedException {
         IPrinterFacade service = (IPrinterFacade) Naming.lookup("rmi://localhost:5099/printerService");
+        String username1 = "Cecilia";
+        // create new user
+        service.createUser(username1, "test".toCharArray());
+        String username2 = "David";
+        // create new user
+        service.createUser(username2, "test".toCharArray());
+        String username3 = "Erica";
+        // create new user
+        service.createUser(username3, "test".toCharArray());
+        String username4 = "Fred";
+        // create new user
+        service.createUser(username4, "test".toCharArray());
+        String username5 = "George";
+        // create new user
+        service.createUser(username5, "test".toCharArray());
+    }
+
+    private static void lab1() throws MalformedURLException, NotBoundException, RemoteException, AuthenticationFailedException {
+        IPrinterFacade service = (IPrinterFacade) Naming.lookup("rmi://localhost:5099/printerService");
         String username = generateRandomUsername();
         // create new user
         service.createUser(username, "test".toCharArray());

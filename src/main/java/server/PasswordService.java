@@ -109,4 +109,8 @@ public class PasswordService implements IPasswordService {
         return true;
     }
 
+    private boolean checkAccess(String username, int op_id) {
+
+    }
+
 }

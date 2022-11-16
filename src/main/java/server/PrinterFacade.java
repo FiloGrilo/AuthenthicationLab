@@ -50,6 +50,7 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     @Override
     public String print(String username, String filename, String printer) throws AuthenticationFailedException {
         userService.verifyUser(username);
+        userService.(username, Operations.print.ordinal());
         return printerService.print(filename, printer);
     }
 
@@ -105,5 +106,4 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
             System.out.println(e.getMessage());
         }
     }
-
 }
