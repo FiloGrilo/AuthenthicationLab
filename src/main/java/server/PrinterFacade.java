@@ -12,12 +12,13 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     private final IPasswordService passwordService;
     private final IPrinterService printerService;
     private final IUserService userService;
-
-    public PrinterFacade(IPasswordService passwordService, IPrinterService printer, IUserService userService) throws RemoteException {
+    private final IUserOperation verifyAccess;
+    public PrinterFacade(IPasswordService passwordService, IPrinterService printer, IUserService userService, IUserOperation verifyAccess) throws RemoteException {
         super();
         this.passwordService = passwordService;
         this.printerService = printer;
         this.userService = userService;
+        this.verifyAccess = verifyAccess;
     }
 
     @Override
@@ -49,31 +50,35 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
 
     @Override
     public String print(String username, String filename, String printer) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.print.ordinal());
         userService.verifyUser(username);
-        userService.(username, Operations.print.ordinal());
         return printerService.print(filename, printer);
     }
 
     @Override
     public String queue(String username, String printer) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.queue.ordinal());
         userService.verifyUser(username);
         return printerService.queue(printer);
     }
 
     @Override
     public void topQueue(String username, String printer, Integer job) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.topQueue.ordinal());
         userService.verifyUser(username);
         printerService.topQueue(printer, job);
     }
 
     @Override
     public void start(String username) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.start.ordinal());
         userService.verifyUser(username);
          printerService.start();
     }
 
     @Override
     public void stop(String username) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.stop.ordinal());
         userService.verifyUser(username);
         printerService.stop();
 
@@ -81,18 +86,21 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
 
     @Override
     public void restart(String username) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.restart.ordinal());
         userService.verifyUser(username);
         printerService.restart();
     }
 
     @Override
     public String status(String username) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.status.ordinal());
         userService.verifyUser(username);
         return printerService.status();
     }
 
     @Override
     public String readConfig(String username, String parameter) throws AuthenticationFailedException {
+        verifyAccess.controlAccess(username, Operations.readConfig.ordinal());
         userService.verifyUser(username);
         return printerService.readConfig(parameter);
     }
@@ -100,6 +108,7 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     @Override
     public void setConfig(String username, String parameter, String value) {
         try {
+            verifyAccess.controlAccess(username, Operations.setConfig.ordinal());
             userService.verifyUser(username);
             printerService.setConfig(parameter, value);
         } catch (AuthenticationFailedException e) {
