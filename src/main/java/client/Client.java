@@ -1,100 +1,180 @@
 package client;
 
-import server.AuthenticationFailedException;
 import server.IPrinterFacade;
-
+import server.UserAccessException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 import java.util.Random;
 
 public class Client {
-    public static void main(String[] args) throws NotBoundException, MalformedURLException, RemoteException, AuthenticationFailedException {
+    public static void main(String[] args) throws Exception {
         IPrinterFacade service = (IPrinterFacade) Naming.lookup("rmi://localhost:5099/printerService");
-        String username1 = "Cecilia";
-        // create new user
-        service.createUser(username1, "test".toCharArray());
-        String username2 = "David";
-        // create new user
-        service.createUser(username2, "test".toCharArray());
-        String username3 = "Erica";
-        // create new user
-        service.createUser(username3, "test".toCharArray());
-        String username4 = "Fred";
-        // create new user
-        service.createUser(username4, "test".toCharArray());
-        String username5 = "George";
-        // create new user
-        service.createUser(username5, "test".toCharArray());
+        evaluateUserBasedAccessControl(service);
     }
 
-    private static void lab1() throws MalformedURLException, NotBoundException, RemoteException, AuthenticationFailedException {
-        IPrinterFacade service = (IPrinterFacade) Naming.lookup("rmi://localhost:5099/printerService");
-        String username = generateRandomUsername();
-        // create new user
-        service.createUser(username, "test".toCharArray());
-        // try to verify user with incorrect password
+    private static void evaluateUserBasedAccessControl(IPrinterFacade service) throws Exception {
+        System.out.println("\n---------------Results of User Based Access Control----------------- \n");
+        checkForAlice(service);
+        checkForFred(service);
+        checkForCecilia(service);
+        checkForBob(service);
+        checkForDavid(service);
+        checkForGeorge(service);
+    }
+
+    private static void checkForBob(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for BOB:\n");
+        String bob = "Bob";
+        // log in
+        service.verifyUser(bob, "test".toCharArray());
+        checkForUser(service, bob);
+    }
+
+    private static void checkForDavid(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for DAVID:\n");
+        String david = "David";
+        // log in
+        service.verifyUser(david, "test".toCharArray());
+        checkForUser(service, david);
+    }
+
+    private static void checkForGeorge(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for GEORGE:\n");
+        String george = "George";
+        // log in
+        service.verifyUser(george, "test".toCharArray());
+        checkForUser(service, george);
+    }
+
+    private static void checkForCecilia(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for CECILIA:\n");
+        String cecilia = "Cecilia";
+        // log in
+        service.verifyUser(cecilia, "test".toCharArray());
+        checkForUser(service, cecilia);
+
+    }
+
+    private static void checkForFred(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for FRED:\n");
+        String fred = "Fred";
+        // log in
+        service.verifyUser(fred, "test".toCharArray());
+        checkForUser(service, fred);
+    }
+
+    private static void checkForAlice(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for ALICE:\n");
+        String alice = "Alice";
+        // log in
+        service.verifyUser(alice, "test".toCharArray());
+        //catch UserAccessException if user is not allowed to perform an operation
+        checkForUser(service, alice);
+    }
+
+    private static void checkForUser(IPrinterFacade service, String username) throws Exception {
+        // User starts the printing serve
+        System.out.println("Start:");
         try {
-            System.out.println("\nTrying to verify user with incorrect password..");
-            service.verifyUser(username, "incorrect".toCharArray());
-        } catch (AuthenticationFailedException e) {
-            System.out.println(e.getMessage());
+            service.start(username);
+            System.out.println(username + " successfully started the printer\n");
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
         }
-        // try to verify user with correct password
-        System.out.println("\nTrying to verify user with correct password..");
-        boolean isUserVerified = service.verifyUser(username, "test".toCharArray());
-        if (isUserVerified) System.out.println("User with username '" + username + "'successfully verified!\n");
 
-        // start the printing server
-        System.out.println("\nStarting the server...\n");
-        service.start(username);
-        // get status of the printing server
-        System.out.println("--------------------STATUS----------------------");
-        String status = service.status(username);
-        System.out.println(status + "\n");
+        // User gets status of the printing server
+        System.out.println("Status:");
+        try {
+            String status = service.status(username);
+            System.out.println(username + " reads the status of printer: " + status);
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
 
-        // set printing server config
-        System.out.println("setting config...\n");
-        service.setConfig(username, "param1", "value1");
-        // read the setting config
-        System.out.println("-------------------READ_CONFIG---------------------");
-        String config = service.readConfig(username, "param1");
-        System.out.println(config+ "\n");
+        // User sets the printing server config
+        System.out.println("SetConfig:");
+        String param = generateRandomParam();
+        try {
+            service.setConfig(username, param, "value1");
+            System.out.println(username + " sets the printer config for parameter '" + param + "'\n");
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
 
-        // print files on Printer 1
-        System.out.println("--------------------PRINT----------------------");
-        String file1 = service.print(username, "file1", "Printer1");
-        System.out.println(file1);
-        String file2 = service.print(username, "file2", "Printer1");
-        System.out.println(file2);
-        String file3 = service.print(username, "file3", "Printer1");
-        System.out.println(file3);
-        System.out.println("\n");
+        // User reads the setting config
+        System.out.println("ReadConfig:");
+        try {
+            String config = service.readConfig(username, param);
+            System.out.println(username + " reads the printer config. " + config);
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
 
-        // get the Printer1 queue
-        System.out.println("---------------------QUEUE----------------------");
-        String queue = service.queue(username, "Printer1");
-        System.out.println(queue);
+        // User prints files
+        System.out.println("Print:");
+        try {
+            String printStatus1 = service.print(username, generateRandomFilename(), "Printer1");
+            String printStatus2 = service.print(username, generateRandomFilename(), "Printer1");
+            System.out.println(printStatus1);
+            System.out.println(printStatus2);
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
 
-        //move job to the top of the queue
-        System.out.println("moving job 2 to the top...\n");
-        service.topQueue(username, "Printer1", 2);
-        String newQueue = service.queue(username, "Printer1");
-        System.out.println("------------QUEUE_AFTER_MOVING_TO_TOP-----------");
-        System.out.println(newQueue);
+        // User lists the print queue
+        System.out.println("\nQueue:");
+        try {
+            String queueList = service.queue(username, "Printer1");
+            System.out.println(queueList);
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
 
-        // restart the printing server
-        System.out.println("restarting the server...\n");
-        service.restart(username);
 
-        // get the Printer1 queue after restarting
-        System.out.println("---------------QUEUE_AFTER_RESTART------------------");
-        String queueAfterRestarting = service.queue(username, "Printer1");
-        System.out.println(queueAfterRestarting);
+        // User moves job to the top of the queue
+        System.out.println("TopQueue:");
+        try {
+            int job = 2;
+            service.topQueue(username, "Printer1", job);
+            System.out.println(username + " moves job: " + job + " to the top of the queue\n");
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
+
+        // User stops the server
+        System.out.println("Stop:");
+        try {
+            service.stop(username);
+            System.out.println(username + " stopped the server\n");
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
+
+        // User restarts the server
+        System.out.println("Restart:");
+        try {
+            service.restart(username);
+            System.out.println(username + " restarted the server\n");
+        } catch (UserAccessException e) {
+            System.out.println(e.getMessage() + "\n");
+        }
+
     }
 
-    private static String generateRandomUsername() {
-       return "user_"  + new Random().nextInt();
+    private static String generateRandomParam() {
+        return "param_"  + new Random().nextInt();
+    }
+
+    private static String generateRandomFilename() {
+        return "file_"  + new Random().nextInt();
+    }
+
+    private static void printLine() {
+        System.out.println("----------------------------------------------");
     }
 }

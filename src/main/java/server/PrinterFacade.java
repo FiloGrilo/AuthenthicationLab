@@ -12,8 +12,8 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     private final IPasswordService passwordService;
     private final IPrinterService printerService;
     private final IUserService userService;
-    private final IUserOperation verifyAccess;
-    public PrinterFacade(IPasswordService passwordService, IPrinterService printer, IUserService userService, IUserOperation verifyAccess) throws RemoteException {
+    private final IUserAccessService verifyAccess;
+    public PrinterFacade(IPasswordService passwordService, IPrinterService printer, IUserService userService, IUserAccessService verifyAccess) throws RemoteException {
         super();
         this.passwordService = passwordService;
         this.printerService = printer;
@@ -47,69 +47,69 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
         throw new AuthenticationFailedException("Authentication of user with username: " + username + " failed. User cannot use the printer");
     }
 
-
     @Override
-    public String print(String username, String filename, String printer) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.print.ordinal());
+    public String print(String username, String filename, String printer) throws Exception {
         userService.verifyUser(username);
+        verifyAccess.checkUserAccess(username, Operation.print.getValue());
+
         return printerService.print(filename, printer);
     }
 
     @Override
-    public String queue(String username, String printer) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.queue.ordinal());
+    public String queue(String username, String printer) throws Exception {
         userService.verifyUser(username);
+        verifyAccess.checkUserAccess(username, Operation.queue.getValue());
         return printerService.queue(printer);
     }
 
     @Override
-    public void topQueue(String username, String printer, Integer job) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.topQueue.ordinal());
+    public void topQueue(String username, String printer, Integer job) throws Exception {
         userService.verifyUser(username);
+        verifyAccess.checkUserAccess(username, Operation.topQueue.getValue());
         printerService.topQueue(printer, job);
     }
 
     @Override
-    public void start(String username) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.start.ordinal());
+    public void start(String username) throws Exception {
         userService.verifyUser(username);
-         printerService.start();
+        verifyAccess.checkUserAccess(username, Operation.start.getValue());
+        printerService.start();
     }
 
     @Override
-    public void stop(String username) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.stop.ordinal());
+    public void stop(String username) throws Exception {
         userService.verifyUser(username);
+        verifyAccess.checkUserAccess(username, Operation.stop.getValue());
         printerService.stop();
 
     }
 
     @Override
-    public void restart(String username) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.restart.ordinal());
+    public void restart(String username) throws Exception {
         userService.verifyUser(username);
+        verifyAccess.checkUserAccess(username, Operation.restart.getValue());
         printerService.restart();
     }
 
     @Override
-    public String status(String username) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.status.ordinal());
+    public String status(String username) throws Exception {
         userService.verifyUser(username);
+        verifyAccess.checkUserAccess(username, Operation.status.ordinal());
         return printerService.status();
     }
 
     @Override
-    public String readConfig(String username, String parameter) throws AuthenticationFailedException {
-        verifyAccess.controlAccess(username, Operations.readConfig.ordinal());
+    public String readConfig(String username, String parameter) throws Exception {
         userService.verifyUser(username);
+        verifyAccess.checkUserAccess(username, Operation.readConfig.getValue());
         return printerService.readConfig(parameter);
     }
 
     @Override
-    public void setConfig(String username, String parameter, String value) {
+    public void setConfig(String username, String parameter, String value) throws Exception {
         try {
-            verifyAccess.controlAccess(username, Operations.setConfig.ordinal());
             userService.verifyUser(username);
+            verifyAccess.checkUserAccess(username, Operation.setConfig.getValue());
             printerService.setConfig(parameter, value);
         } catch (AuthenticationFailedException e) {
             System.out.println(e.getMessage());

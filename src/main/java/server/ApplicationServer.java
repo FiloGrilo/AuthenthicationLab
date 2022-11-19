@@ -14,7 +14,7 @@ public class ApplicationServer {
         Map<String, Printer> printers = generatePrinters();
         PrinterService printerService = new PrinterService(printers);
         UserService userService = new UserService();
-        UserOperation userOperation = new UserOperation();
+        UserAccessService userOperation = new UserAccessService();
         registry.rebind("printerService", new PrinterFacade(passwordService, printerService, userService, userOperation));
     }
 
