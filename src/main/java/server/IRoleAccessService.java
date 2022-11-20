@@ -1,6 +1,5 @@
 package server;
 
-
-public interface IUserAccessService {
+public interface IRoleAccessService {
     void checkAccess(String username, int operationID) throws Exception;
 }

@@ -1,6 +1,7 @@
 package client;
 
 import server.IPrinterFacade;
+import server.RoleAccessException;
 import server.UserAccessException;
 import java.rmi.Naming;
 import java.util.Random;
@@ -8,8 +9,13 @@ import java.util.Random;
 public class Client {
     public static void main(String[] args) throws Exception {
         IPrinterFacade service = (IPrinterFacade) Naming.lookup("rmi://localhost:5099/printerService");
+        //!! To test with different access control modes:
+        // change parameter accessPolicy in ApplicationServer -> accessPolicy -> restart the server
+
         evaluateUserBasedAccessControl(service);
+        //evaluateRoleBasedAccessControl(service);
     }
+
 
     private static void evaluateUserBasedAccessControl(IPrinterFacade service) throws Exception {
         System.out.println("\n---------------Results of User Based Access Control----------------- \n");
@@ -18,7 +24,47 @@ public class Client {
         checkForCecilia(service);
         checkForBob(service);
         checkForDavid(service);
+        checkForErica(service);
         checkForGeorge(service);
+    }
+
+    private static void evaluateRoleBasedAccessControl(IPrinterFacade service) throws Exception {
+        System.out.println("\n---------------Results of User Based Access Control----------------- \n");
+        checkForAlice(service);
+        checkForFred(service);
+        checkForCecilia(service);
+        checkForDavid(service);
+        checkForErica(service);
+        checkForGeorge(service);
+        checkForIda(service);
+        checkForHenry(service);
+    }
+
+    private static void checkForIda(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for IDA:\n");
+        String ida = "Ida";
+        // log in
+        service.verifyUser(ida, "test".toCharArray());
+        checkForUser(service, ida);
+    }
+
+    private static void checkForHenry(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for HENRY:\n");
+        String henry = "Henry";
+        // log in
+        service.verifyUser(henry, "test".toCharArray());
+        checkForUser(service, henry);
+    }
+
+    private static void checkForErica(IPrinterFacade service) throws Exception {
+        printLine();
+        System.out.println("\tChecking access for ERICA:\n");
+        String erica = "Erica";
+        // log in
+        service.verifyUser(erica, "test".toCharArray());
+        checkForUser(service, erica);
     }
 
     private static void checkForBob(IPrinterFacade service) throws Exception {
@@ -83,7 +129,7 @@ public class Client {
         try {
             service.start(username);
             System.out.println(username + " successfully started the printer\n");
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -92,7 +138,7 @@ public class Client {
         try {
             String status = service.status(username);
             System.out.println(username + " reads the status of printer: " + status);
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -102,7 +148,7 @@ public class Client {
         try {
             service.setConfig(username, param, "value1");
             System.out.println(username + " sets the printer config for parameter '" + param + "'\n");
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -111,7 +157,7 @@ public class Client {
         try {
             String config = service.readConfig(username, param);
             System.out.println(username + " reads the printer config. " + config);
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -122,7 +168,7 @@ public class Client {
             String printStatus2 = service.print(username, generateRandomFilename(), "Printer1");
             System.out.println(printStatus1);
             System.out.println(printStatus2);
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -131,7 +177,7 @@ public class Client {
         try {
             String queueList = service.queue(username, "Printer1");
             System.out.println(queueList);
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -142,7 +188,7 @@ public class Client {
             int job = 2;
             service.topQueue(username, "Printer1", job);
             System.out.println(username + " moves job: " + job + " to the top of the queue\n");
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -151,7 +197,7 @@ public class Client {
         try {
             service.stop(username);
             System.out.println(username + " stopped the server\n");
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 
@@ -160,7 +206,7 @@ public class Client {
         try {
             service.restart(username);
             System.out.println(username + " restarted the server\n");
-        } catch (UserAccessException e) {
+        } catch (UserAccessException | RoleAccessException e) {
             System.out.println(e.getMessage() + "\n");
         }
 

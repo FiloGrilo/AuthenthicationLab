@@ -12,13 +12,15 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     private final IPasswordService passwordService;
     private final IPrinterService printerService;
     private final IUserService userService;
-    private final IUserAccessService verifyAccess;
-    public PrinterFacade(IPasswordService passwordService, IPrinterService printer, IUserService userService, IUserAccessService verifyAccess) throws RemoteException {
+    private final AccessPolicy accessPolicy;
+
+
+    public PrinterFacade(IPasswordService passwordService, IPrinterService printer, IUserService userService, AccessPolicy accessPolicy) throws RemoteException {
         super();
         this.passwordService = passwordService;
         this.printerService = printer;
         this.userService = userService;
-        this.verifyAccess = verifyAccess;
+        this.accessPolicy = accessPolicy;
     }
 
     @Override
@@ -50,36 +52,35 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     @Override
     public String print(String username, String filename, String printer) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.print.getValue());
-
+        checkAccess(username, Operation.print);
         return printerService.print(filename, printer);
     }
 
     @Override
     public String queue(String username, String printer) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.queue.getValue());
+        checkAccess(username, Operation.queue);
         return printerService.queue(printer);
     }
 
     @Override
     public void topQueue(String username, String printer, Integer job) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.topQueue.getValue());
+        checkAccess(username, Operation.topQueue);
         printerService.topQueue(printer, job);
     }
 
     @Override
     public void start(String username) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.start.getValue());
+        checkAccess(username, Operation.start);
         printerService.start();
     }
 
     @Override
     public void stop(String username) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.stop.getValue());
+        checkAccess(username, Operation.stop);
         printerService.stop();
 
     }
@@ -87,21 +88,21 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     @Override
     public void restart(String username) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.restart.getValue());
+        checkAccess(username, Operation.restart);
         printerService.restart();
     }
 
     @Override
     public String status(String username) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.status.ordinal());
+        checkAccess(username, Operation.status);
         return printerService.status();
     }
 
     @Override
     public String readConfig(String username, String parameter) throws Exception {
         userService.verifyUser(username);
-        verifyAccess.checkUserAccess(username, Operation.readConfig.getValue());
+        checkAccess(username, Operation.readConfig);
         return printerService.readConfig(parameter);
     }
 
@@ -109,10 +110,20 @@ public class PrinterFacade extends UnicastRemoteObject implements IPrinterFacade
     public void setConfig(String username, String parameter, String value) throws Exception {
         try {
             userService.verifyUser(username);
-            verifyAccess.checkUserAccess(username, Operation.setConfig.getValue());
+            checkAccess(username, Operation.setConfig);
             printerService.setConfig(parameter, value);
         } catch (AuthenticationFailedException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     *  This method checks user access to invoke operation based on access policy defined in the serve
+     */
+    private void checkAccess(String username, Operation op) throws RoleAccessException, UserAccessException {
+        switch (accessPolicy) {
+            case roleBased -> RoleAccessChecker.check(username, op);
+            case userBased -> UserAccessChecker.check(username, op);
         }
     }
 }

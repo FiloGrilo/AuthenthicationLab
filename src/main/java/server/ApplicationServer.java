@@ -1,21 +1,31 @@
 package server;
 
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ApplicationServer {
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws Exception {
         Registry registry = LocateRegistry.createRegistry(5099);
 
         PasswordService passwordService = new PasswordService();
         Map<String, Printer> printers = generatePrinters();
+
+        //loading user roles
+        UserRolesLoader.load();
+        //loading user operations
+        UserOperationsLoader.load();
+        //loading role operations
+        RoleOperationsLoader.load();
+
+
         PrinterService printerService = new PrinterService(printers);
         UserService userService = new UserService();
-        UserAccessService userOperation = new UserAccessService();
-        registry.rebind("printerService", new PrinterFacade(passwordService, printerService, userService, userOperation));
+        //defining access policy
+        AccessPolicy accessPolicy = AccessPolicy.userBased;
+
+        registry.rebind("printerService", new PrinterFacade(passwordService, printerService, userService, accessPolicy));
     }
 
     private static Map<String, Printer> generatePrinters() {
