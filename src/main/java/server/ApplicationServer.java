@@ -22,8 +22,9 @@ public class ApplicationServer {
 
         PrinterService printerService = new PrinterService(printers);
         UserService userService = new UserService();
-        //defining access policy
-        AccessPolicy accessPolicy = AccessPolicy.userBased;
+
+        //setting access policy
+        AccessPolicy accessPolicy = AccessPolicy.roleBased;
 
         registry.rebind("printerService", new PrinterFacade(passwordService, printerService, userService, accessPolicy));
     }

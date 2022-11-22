@@ -12,8 +12,8 @@ public class Client {
         //!! To test with different access control modes:
         // change parameter accessPolicy in ApplicationServer -> accessPolicy -> restart the server
 
-        evaluateUserBasedAccessControl(service);
-        //evaluateRoleBasedAccessControl(service);
+        //evaluateUserBasedAccessControl(service);
+        evaluateRoleBasedAccessControl(service);
     }
 
 
@@ -29,10 +29,11 @@ public class Client {
     }
 
     private static void evaluateRoleBasedAccessControl(IPrinterFacade service) throws Exception {
-        System.out.println("\n---------------Results of User Based Access Control----------------- \n");
+        System.out.println("\n---------------Results of Role Based Access Control----------------- \n");
         checkForAlice(service);
         checkForFred(service);
         checkForCecilia(service);
+        checkForBob(service);
         checkForDavid(service);
         checkForErica(service);
         checkForGeorge(service);
