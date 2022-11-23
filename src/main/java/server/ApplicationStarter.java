@@ -1,11 +1,16 @@
 package server;
 
+import server.authentication.PasswordService;
+import server.loaders.RoleOperationsLoader;
+import server.loaders.UserOperationsLoader;
+import server.loaders.UserRolesLoader;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ApplicationServer {
+public class ApplicationStarter {
     public static void main(String[] args) throws Exception {
         Registry registry = LocateRegistry.createRegistry(5099);
 

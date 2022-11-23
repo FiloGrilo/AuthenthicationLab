@@ -1,4 +1,8 @@
-package server;
+package server.loaders;
+
+import server.DataSource;
+import server.Operation;
+import server.Role;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,4 +1,7 @@
-package server;
+package server.loaders;
+
+import server.DataSource;
+import server.Operation;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +25,7 @@ public class UserOperationsLoader {
 
     public static void load() throws Exception {
         try (Connection con = DataSource.getConnection();
-            PreparedStatement pst = con.prepareStatement(SQL_QUERY_SELECT)) {
+             PreparedStatement pst = con.prepareStatement(SQL_QUERY_SELECT)) {
             ResultSet rst = pst.executeQuery();
             while (rst.next()) {
                 String username = rst.getString(1);

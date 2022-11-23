@@ -10,15 +10,14 @@ public class Client {
     public static void main(String[] args) throws Exception {
         IPrinterFacade service = (IPrinterFacade) Naming.lookup("rmi://localhost:5099/printerService");
         //!! To test with different access control modes:
-        // change parameter accessPolicy in ApplicationServer -> accessPolicy -> restart the server
+        // change parameter accessPolicy in ApplicationStarter -> accessPolicy -> restart the server
 
-        //evaluateUserBasedAccessControl(service);
+       // evaluateUserBasedAccessControl(service);
         evaluateRoleBasedAccessControl(service);
     }
 
-
     private static void evaluateUserBasedAccessControl(IPrinterFacade service) throws Exception {
-        System.out.println("\n---------------Results of User Based Access Control----------------- \n");
+        System.out.println("\n-----Results of User Based Access Control----------\n");
         checkForAlice(service);
         checkForFred(service);
         checkForCecilia(service);
@@ -26,10 +25,12 @@ public class Client {
         checkForDavid(service);
         checkForErica(service);
         checkForGeorge(service);
+        checkForIda(service);
+        checkForHenry(service);
     }
 
     private static void evaluateRoleBasedAccessControl(IPrinterFacade service) throws Exception {
-        System.out.println("\n---------------Results of Role Based Access Control----------------- \n");
+        System.out.println("\n--------Results of Role Based Access Control---------\n");
         checkForAlice(service);
         checkForFred(service);
         checkForCecilia(service);
